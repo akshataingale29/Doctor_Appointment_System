@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedEase| Login</title>
+  <link rel="stylesheet" href="/static/css/login.css">
+  <style>
+    .messages {
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+    }
+    .error {
+      background-color: #ffebee;
+      color: #c62828;
+      border: 1px solid #ef9a9a;
+    }
+    .success {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #a5d6a7;
+    }
+    .admin-link {
+      text-align: center;
+      margin-top: 10px;
+    }
+    .admin-link a {
+      color: #10847e;
+      text-decoration: none;
+    }
+    .admin-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+    <div class="modal">
+        
+        <form class="modal-content" method="post" action="/login/">
+          {% csrf_token %}
+          <div class="container">
+            <h1>Sign in</h1>
+            <p>Please fill in this form to login.</p>
+            <hr>
+            
+            {% if messages %}
+            <div class="messages">
+              {% for message in messages %}
+              <div class="{% if message.tags %}{{ message.tags }}{% endif %}">
+                {{ message }}
+              </div>
+              {% endfor %}
+            </div>
+            {% endif %}
+            
+            <label for="email"><b>Email</b></label>
+            <input type="text" placeholder="Enter Email-id" name="email" required>
+      
+            <label for="psw"><b>Password</b></label>
+            <input type="password" placeholder="Enter Password" name="password" required>
+      
+            
+            
+            <label>
+              <input type="checkbox" checked="checked" name="remember" style="margin-bottom:15px"> Remember me
+            </label>
+      
+            
+            <div class="clearfix">
+              <button type="button" onclick="window.location.href='/';" class="cancelbtn">Cancel</button>
+              <button type="submit" class="signupbtn">Sign in</button>
+            </div>
+          </div>
+          <p style="text-align: center;">if not a user then <a href="/signup/"><b>signup</b></a></p>
+          <p class="admin-link">Are you a hospital admin? <a href="{% url 'admin_login' %}"><b>Admin Login</b></a></p>
+        </form>
+      </div>
+
+
+
+
+
+      <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                
+                <h1>Online Doctor Appointment</h1>
+            </div>
+            <div class="footer-links">
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Doctors</a></li>
+                    <li><a href="#">Appointments</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-social">
+                <a href="#">Facebook
+                <a href="#">Twitter
+                <a href="#">Instagram
+            </div>
+        </div>
+    </footer>
+      
+</body>
+</html>

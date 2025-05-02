@@ -1,0 +1,726 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Manage Specialities - MedEase Admin{% endblock %}
+
+{% block admin_content %}
+<div class="admin-dashboard-wrapper">
+    <div class="admin-sidebar">
+        <div class="admin-profile">
+            <div class="admin-avatar">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <h3>Welcome, Admin</h3>
+            <p>{{ user.email }}</p>
+        </div>
+        <nav class="admin-nav">
+            <ul>
+                <li><a href="{% url 'admin_dashboard' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="{% url 'admin_manage_appointments' %}"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+                <li><a href="{% url 'admin_doctors_list' %}"><i class="fas fa-user-md"></i> Doctors</a></li>
+                <li class="active"><a href="{% url 'admin_specialities' %}"><i class="fas fa-stethoscope"></i> Specialities</a></li>
+                <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </nav>
+    </div>
+    
+    <div class="admin-content">
+        <header class="admin-header">
+            <h1><i class="fas fa-stethoscope"></i> Manage Specialities</h1>
+            <div class="admin-header-right">
+                <button id="add-speciality-btn" class="add-btn">
+                    <i class="fas fa-plus"></i>
+                    <span>Add New Speciality</span>
+                </button>
+            </div>
+        </header>
+        
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                {{ message }}
+                <button class="close-message"><i class="fas fa-times"></i></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <div class="specialities-wrapper">
+            <div class="search-filter">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="speciality-search" placeholder="Search specialities...">
+                </div>
+            </div>
+            
+            {% if specialities %}
+            <div class="specialities-grid">
+                {% for speciality in specialities %}
+                <div class="speciality-card">
+                    <div class="speciality-card-content">
+                        <div class="speciality-icon">
+                            <i class="fas fa-stethoscope"></i>
+                        </div>
+                        <div class="speciality-info">
+                            <h3>{{ speciality.name }}</h3>
+                            <p>{{ speciality.description }}</p>
+                            <div class="speciality-meta">
+                                <span><i class="fas fa-user-md"></i> {{ speciality.doctor_set.count }} Doctors</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="speciality-card-footer">
+                        <button class="edit-btn edit-speciality" data-id="{{ speciality.id }}" data-name="{{ speciality.name }}" data-description="{{ speciality.description }}">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="delete-btn delete-speciality" data-id="{{ speciality.id }}" data-name="{{ speciality.name }}">
+                            <i class="fas fa-trash-alt"></i> Delete
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-stethoscope"></i>
+                <h3>No Specialities Found</h3>
+                <p>There are no specialities in the system yet.</p>
+                <button id="empty-add-speciality-btn" class="add-btn">
+                    <i class="fas fa-plus"></i> Add New Speciality
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Speciality Modal -->
+<div id="speciality-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modal-title">Add New Speciality</h2>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="speciality-form" method="POST" action="{% url 'admin_add_speciality' %}">
+                {% csrf_token %}
+                <input type="hidden" id="speciality-id" name="speciality_id" value="">
+                
+                <div class="form-group">
+                    <label for="speciality-name">Speciality Name</label>
+                    <input type="text" id="speciality-name" name="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="speciality-description">Description</label>
+                    <textarea id="speciality-description" name="description" rows="4" required></textarea>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="cancel-btn" id="cancel-btn">Cancel</button>
+                    <button type="submit" class="save-btn">Save Speciality</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="delete-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Confirm Deletion</h2>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to delete <span id="speciality-name-span"></span>?</p>
+            <p class="warning"><i class="fas fa-exclamation-triangle"></i> This will also remove all associated doctor relationships.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="cancel-btn" id="cancel-delete">Cancel</button>
+            <form id="delete-form" method="POST" action="" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="confirm-delete-btn">Delete</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Search functionality
+        const searchInput = document.getElementById('speciality-search');
+        const specialityCards = document.querySelectorAll('.speciality-card');
+        
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function() {
+                const query = this.value.toLowerCase();
+                
+                specialityCards.forEach(card => {
+                    const specialityName = card.querySelector('h3').textContent.toLowerCase();
+                    const specialityDesc = card.querySelector('p').textContent.toLowerCase();
+                    
+                    if (specialityName.includes(query) || specialityDesc.includes(query)) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        }
+        
+        // Modal functionality
+        const specialityModal = document.getElementById('speciality-modal');
+        const deleteModal = document.getElementById('delete-modal');
+        const addSpecialityBtn = document.getElementById('add-speciality-btn');
+        const emptyAddBtn = document.getElementById('empty-add-speciality-btn');
+        const closeSpecialityModal = specialityModal.querySelector('.close');
+        const closeDeleteModal = deleteModal.querySelector('.close');
+        const cancelBtn = document.getElementById('cancel-btn');
+        const cancelDeleteBtn = document.getElementById('cancel-delete');
+        const specialityForm = document.getElementById('speciality-form');
+        const modalTitle = document.getElementById('modal-title');
+        
+        // Add speciality button
+        if (addSpecialityBtn) {
+            addSpecialityBtn.addEventListener('click', function() {
+                resetForm();
+                modalTitle.textContent = 'Add New Speciality';
+                specialityForm.action = "{% url 'admin_add_speciality' %}";
+                specialityModal.style.display = 'block';
+            });
+        }
+        
+        // Empty state add button
+        if (emptyAddBtn) {
+            emptyAddBtn.addEventListener('click', function() {
+                resetForm();
+                modalTitle.textContent = 'Add New Speciality';
+                specialityForm.action = "{% url 'admin_add_speciality' %}";
+                specialityModal.style.display = 'block';
+            });
+        }
+        
+        // Edit speciality buttons
+        const editButtons = document.querySelectorAll('.edit-speciality');
+        editButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                const name = this.getAttribute('data-name');
+                const description = this.getAttribute('data-description');
+                
+                document.getElementById('speciality-id').value = id;
+                document.getElementById('speciality-name').value = name;
+                document.getElementById('speciality-description').value = description;
+                
+                modalTitle.textContent = 'Edit Speciality';
+                specialityForm.action = `/hospital-admin/specialities/${id}/edit/`;
+                specialityModal.style.display = 'block';
+            });
+        });
+        
+        // Delete speciality buttons
+        const deleteButtons = document.querySelectorAll('.delete-speciality');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                const name = this.getAttribute('data-name');
+                
+                document.getElementById('speciality-name-span').textContent = name;
+                document.getElementById('delete-form').action = `/hospital-admin/specialities/${id}/delete/`;
+                deleteModal.style.display = 'block';
+            });
+        });
+        
+        // Close modal buttons
+        if (closeSpecialityModal) {
+            closeSpecialityModal.addEventListener('click', function() {
+                specialityModal.style.display = 'none';
+            });
+        }
+        
+        if (closeDeleteModal) {
+            closeDeleteModal.addEventListener('click', function() {
+                deleteModal.style.display = 'none';
+            });
+        }
+        
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', function() {
+                specialityModal.style.display = 'none';
+            });
+        }
+        
+        if (cancelDeleteBtn) {
+            cancelDeleteBtn.addEventListener('click', function() {
+                deleteModal.style.display = 'none';
+            });
+        }
+        
+        // Close when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target == specialityModal) {
+                specialityModal.style.display = 'none';
+            }
+            if (event.target == deleteModal) {
+                deleteModal.style.display = 'none';
+            }
+        });
+        
+        // Close message buttons
+        const closeButtons = document.querySelectorAll('.close-message');
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                this.parentElement.style.display = 'none';
+            });
+        });
+        
+        // Helper function to reset form
+        function resetForm() {
+            document.getElementById('speciality-id').value = '';
+            document.getElementById('speciality-name').value = '';
+            document.getElementById('speciality-description').value = '';
+        }
+    });
+</script>
+{% endblock %}
+
+{% block styles %}
+<style>
+    /* Specialities wrapper */
+    .specialities-wrapper {
+        margin-top: 20px;
+    }
+    
+    /* Search and filter */
+    .search-filter {
+        margin-bottom: 25px;
+    }
+    
+    .search-box {
+        position: relative;
+        max-width: 400px;
+    }
+    
+    .search-box i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+    }
+    
+    .search-box input {
+        width: 100%;
+        padding: 12px 15px 12px 40px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 15px;
+        transition: all 0.3s;
+    }
+    
+    .search-box input:focus {
+        border-color: #10847e;
+        box-shadow: 0 0 0 2px rgba(16, 132, 126, 0.2);
+        outline: none;
+    }
+    
+    /* Specialities grid */
+    .specialities-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 25px;
+    }
+    
+    .speciality-card {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .speciality-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .speciality-card-content {
+        padding: 25px;
+        display: flex;
+        flex: 1;
+    }
+    
+    .speciality-icon {
+        width: 60px;
+        height: 60px;
+        background-color: #e6f7f6;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 20px;
+        flex-shrink: 0;
+    }
+    
+    .speciality-icon i {
+        font-size: 24px;
+        color: #10847e;
+    }
+    
+    .speciality-info {
+        flex: 1;
+    }
+    
+    .speciality-info h3 {
+        margin: 0 0 10px;
+        font-size: 18px;
+        color: #333;
+    }
+    
+    .speciality-info p {
+        color: #555;
+        margin: 0 0 15px;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    
+    .speciality-meta {
+        margin-top: auto;
+    }
+    
+    .speciality-meta span {
+        display: inline-flex;
+        align-items: center;
+        font-size: 14px;
+        color: #666;
+    }
+    
+    .speciality-meta i {
+        color: #10847e;
+        margin-right: 5px;
+    }
+    
+    .speciality-card-footer {
+        padding: 15px;
+        background-color: #f9fafb;
+        border-top: 1px solid #f0f0f0;
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .edit-btn, .delete-btn {
+        padding: 8px 15px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: none;
+        flex: 1;
+        justify-content: center;
+    }
+    
+    .edit-btn {
+        background-color: #e6f7f6;
+        color: #10847e;
+        margin-right: 10px;
+    }
+    
+    .edit-btn:hover {
+        background-color: #d1efed;
+    }
+    
+    .delete-btn {
+        background-color: #fee2e2;
+        color: #dc2626;
+    }
+    
+    .delete-btn:hover {
+        background-color: #fecaca;
+    }
+    
+    .edit-btn i, .delete-btn i {
+        margin-right: 5px;
+        font-size: 12px;
+    }
+    
+    /* Add Button */
+    .add-btn {
+        background-color: #10847e;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        transition: background-color 0.3s;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .add-btn i {
+        margin-right: 8px;
+    }
+    
+    .add-btn:hover {
+        background-color: #064e4a;
+    }
+    
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    .modal-content {
+        background-color: white;
+        margin: 10% auto;
+        width: 95%;
+        max-width: 500px;
+        border-radius: 10px;
+        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.2);
+        animation: slideDown 0.3s;
+    }
+    
+    @keyframes slideDown {
+        from { transform: translateY(-50px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .modal-header {
+        padding: 20px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .modal-header h2 {
+        margin: 0;
+        font-size: 20px;
+        color: #333;
+    }
+    
+    .close {
+        font-size: 24px;
+        color: #aaa;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+    
+    .close:hover {
+        color: #333;
+    }
+    
+    .modal-body {
+        padding: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #333;
+    }
+    
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 15px;
+        transition: all 0.3s;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus {
+        border-color: #10847e;
+        box-shadow: 0 0 0 2px rgba(16, 132, 126, 0.2);
+        outline: none;
+    }
+    
+    .modal-footer {
+        padding: 15px 0 0;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+    
+    .cancel-btn {
+        padding: 10px 20px;
+        background-color: #f3f4f6;
+        color: #374151;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .cancel-btn:hover {
+        background-color: #e5e7eb;
+    }
+    
+    .save-btn {
+        padding: 10px 20px;
+        background-color: #10847e;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .save-btn:hover {
+        background-color: #064e4a;
+    }
+    
+    .warning {
+        color: #dc2626;
+        display: flex;
+        align-items: center;
+    }
+    
+    .warning i {
+        margin-right: 8px;
+    }
+    
+    .confirm-delete-btn {
+        padding: 10px 20px;
+        background-color: #dc2626;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .confirm-delete-btn:hover {
+        background-color: #b91c1c;
+    }
+    
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+    
+    .empty-state i {
+        font-size: 60px;
+        color: #ccc;
+        margin-bottom: 20px;
+    }
+    
+    .empty-state h3 {
+        font-size: 22px;
+        color: #333;
+        margin-bottom: 10px;
+    }
+    
+    .empty-state p {
+        color: #666;
+        margin-bottom: 25px;
+    }
+    
+    /* Messages */
+    .messages {
+        margin-bottom: 25px;
+    }
+    
+    .message {
+        position: relative;
+        padding: 15px 20px;
+        margin-bottom: 15px;
+        border-radius: 6px;
+        font-size: 15px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        animation: slideIn 0.3s ease-out;
+    }
+    
+    @keyframes slideIn {
+        0% {
+            transform: translateY(-20px);
+            opacity: 0;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    .message.error {
+        background-color: #fff2f0;
+        color: #cb2431;
+        border-left: 4px solid #cb2431;
+    }
+    
+    .message.success {
+        background-color: #f0fff4;
+        color: #22863a;
+        border-left: 4px solid #22863a;
+    }
+    
+    .close-message {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: none;
+        border: none;
+        font-size: 14px;
+        cursor: pointer;
+        opacity: 0.6;
+        transition: opacity 0.3s;
+        color: inherit;
+    }
+    
+    .close-message:hover {
+        opacity: 1;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .specialities-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .admin-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .admin-header-right {
+            margin-top: 15px;
+        }
+    }
+</style>
+{% endblock %} 

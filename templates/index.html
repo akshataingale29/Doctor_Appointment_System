@@ -1,0 +1,957 @@
+{% extends 'base.html' %}
+
+{% block title %}MedEase - Doctor Appointment System{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="hero-content">
+        <h1>Your Health, Our Priority</h1>
+        <p>Schedule appointments with top doctors online - quick, easy, and convenient</p>
+        <div class="discount-badge">
+            <h2>20% OFF</h2>
+            <p>Use code <strong>SMVDU20</strong> on your first consultation</p>
+        </div>
+
+        <div class="search-container">
+            <form action="{% url 'search_doctors' %}" method="GET" class="search-form">
+                <div class="search-input">
+                    <i class="fas fa-user-md"></i>
+                    <input type="text" name="search_doctor" placeholder="Search by doctor or specialty...">
+                </div>
+                <div class="search-input">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <input type="text" name="search_location" placeholder="Enter location...">
+                </div>
+                <button type="submit" class="search-btn">
+                    <i class="fas fa-search"></i> Find Doctors
+                </button>
+            </form>
+        </div>
+    </div>
+    <div class="hero-image">
+        <img src="/static/images/doctor-consult-illustration.svg" alt="Doctor Consultation">
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="features-section">
+    <div class="container">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-user-md"></i>
+            </div>
+            <h3>Qualified Doctors</h3>
+            <p>Consult with top specialists across multiple medical disciplines</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <h3>Easy Appointments</h3>
+            <p>Book and manage appointments with just a few clicks</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <h3>24/7 Availability</h3>
+            <p>Schedule appointments any time, day or night</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-comments"></i>
+            </div>
+            <h3>Consultation Follow-ups</h3>
+            <p>Get follow-up care and continuous support from your doctor</p>
+        </div>
+    </div>
+</div>
+
+<!-- Specialties Section -->
+<div class="specialties-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Our Medical Specialties</h2>
+            <p>Expert care across a wide range of medical specialties</p>
+        </div>
+
+        <div class="specialties-grid">
+            <div class="specialty-card">
+                <div class="specialty-icon">
+                    <img src="/static/images/cancer-ribbon-clipart-teal-7.png" alt="Cancer Care">
+                </div>
+                <h3>Cancer Care</h3>
+                <p>Specialized treatment for various types of cancer</p>
+            </div>
+
+            <div class="specialty-card">
+                <div class="specialty-icon">
+                    <img src="/static/images/Dentalcare.png" alt="Dental Care">
+                </div>
+                <h3>Dental Care</h3>
+                <p>Complete dental services for a healthy smile</p>
+            </div>
+
+            <div class="specialty-card">
+                <div class="specialty-icon">
+                    <img src="/static/images/Darmatology.jpeg" alt="Dermatology">
+                </div>
+                <h3>Dermatology</h3>
+                <p>Expert care for skin, hair and nail conditions</p>
+            </div>
+
+            <div class="specialty-card">
+                <div class="specialty-icon">
+                    <img src="/static/images/Cardiology.png" alt="Cardiology">
+                </div>
+                <h3>Cardiology</h3>
+                <p>Comprehensive heart care and treatments</p>
+            </div>
+
+            <div class="specialty-card">
+                <div class="specialty-icon">
+                    <img src="/static/images/ENT.jpeg" alt="ENT">
+                </div>
+                <h3>ENT</h3>
+                <p>Specialized care for ear, nose, and throat</p>
+            </div>
+
+            <div class="specialty-card">
+                <div class="specialty-icon">
+                    <img src="/static/images/Gastroinstential.jpeg" alt="Gastroinstential">
+                </div>
+                <h3>Gastroenterology</h3>
+                <p>Treatment for digestive system disorders</p>
+            </div>
+
+            <div class="specialty-card">
+                <div class="specialty-icon">
+                    <img src="/static/images/fertility.png" alt="Fertility">
+                </div>
+                <h3>Fertility & IVF</h3>
+                <p>Advanced fertility treatments and support</p>
+            </div>
+
+            <div class="specialty-card">
+                <div class="specialty-icon">
+                    <img src="/static/images/lungtransplant.png" alt="Pulmonology">
+                </div>
+                <h3>Pulmonology</h3>
+                <p>Expert care for lung diseases and conditions</p>
+            </div>
+
+            <div class="specialty-card">
+                <div class="specialty-icon">
+                    <img src="/static/images/neurology.png" alt="Neurology">
+                </div>
+                <h3>Neurology</h3>
+                <p>Specialized treatment for brain and nervous system</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="steps-section" id="howItWorks">
+    <div class="container">
+        <div class="text-center">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">Simple steps to book your appointment</p>
+        </div>
+        <div class="steps-container">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-icon"><i class="fas fa-user-plus"></i></div>
+                <h3>Create an Account</h3>
+                <p>Sign up and create your patient profile with your medical history and preferences.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-icon"><i class="fas fa-search"></i></div>
+                <h3>Find a Doctor</h3>
+                <p>Browse through our network of qualified doctors and specialists.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-icon"><i class="far fa-calendar-check"></i></div>
+                <h3>Book Appointment</h3>
+                <p>Select a convenient time slot and book your appointment instantly.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- About Us Section -->
+<div class="about-section" id="aboutus">
+    <div class="container">
+        <div class="section-header">
+            <h2>About MedEase</h2>
+            <p>Revolutionizing healthcare access</p>
+        </div>
+
+        <div class="about-content">
+            <div class="about-image">
+                <img src="/static/images/AboutMedEase.png" alt="About MedEase">
+            </div>
+            <div class="about-text">
+                <p>MedEase is a revolutionary healthcare platform designed to connect patients with qualified doctors
+                    seamlessly. Our mission is to make healthcare accessible to everyone, everywhere.</p>
+
+                <p>With MedEase, you can easily search for doctors by specialty or location, book appointments with just
+                    a few clicks, and manage all your healthcare needs in one place. We understand the importance of
+                    finding the right healthcare provider, which is why we provide detailed information about our
+                    doctors, including their qualifications, experience, and patient reviews.</p>
+
+                <p>Our platform offers a wide range of specialties, from general practitioners to specialized
+                    consultants, ensuring that you find the right medical professional for your specific needs.</p>
+
+                <div class="about-stats">
+                    <div class="stat-item">
+                        <h3>500+</h3>
+                        <p>Doctors</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>50+</h3>
+                        <p>Specialties</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>10k+</h3>
+                        <p>Happy Patients</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h3>Ready to prioritize your health? </h3>
+            <p>Book an appointment with top doctors today</p>
+
+            <a href="{% url 'search_doctors' %}" class="cta-button">Find Doctors Now</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    /*====================================
+  Modern Responsive Styles for MedEase
+  File: styles.css
+  Mobile-first, clean, professional design
+====================================*/
+
+    /*------------------------------------
+  1. CSS Reset
+------------------------------------*/
+    *,
+    *::before,
+    *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    html {
+        font-size: 100%;
+        /* 16px */
+        scroll-behavior: smooth;
+    }
+
+    body {
+        font-family: var(--ff-sans), Arial, sans-serif;
+        color: var(--clr-dark);
+        line-height: 1.6;
+        background-color: var(--clr-light);
+    }
+
+    img,
+    picture {
+        max-width: 100%;
+        display: block;
+    }
+
+    /*------------------------------------
+  2. Variables
+------------------------------------*/
+    :root {
+        /* Colors */
+        --clr-primary: #10847e;
+        --clr-primary-dark: #064e4a;
+        --clr-secondary: #e6f7f6;
+        --clr-light: #f8fafa;
+        --clr-dark: #172b4d;
+        --clr-grey: #666;
+
+        /* Typography */
+        --ff-sans: 'Helvetica Neue', Arial, sans-serif;
+        --fs-base: 1rem;
+        --fs-lg: 1.125rem;
+        --fs-xl: 1.5rem;
+        --fs-xxl: 2rem;
+
+        /* Spacing */
+        --spacing-xs: 0.5rem;
+        --spacing-sm: 1rem;
+        --spacing-md: 2rem;
+        --spacing-lg: 3rem;
+        --spacing-xl: 4rem;
+
+        /* Radius & Shadow */
+        --radius: 0.5rem;
+        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Utility Classes */
+    .container {
+        width: 90%;
+        max-width: 1200px;
+        margin-inline: auto;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: var(--spacing-sm) var(--spacing-md);
+        border: none;
+        border-radius: var(--radius);
+        font-size: var(--fs-lg);
+        cursor: pointer;
+        text-decoration: none;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .btn-primary {
+        background-color: var(--clr-primary);
+        color: #fff;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--clr-primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    /*------------------------------------
+  3. Hero Section
+------------------------------------*/
+    .hero-section {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+        padding-block: var(--spacing-xl) var(--spacing-lg);
+        background: linear-gradient(135deg, var(--clr-light) 0%, var(--clr-secondary) 100%);
+    }
+
+    .hero-content h1 {
+        font-size: var(--fs-xxl);
+        color: var(--clr-dark);
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .hero-content p {
+        font-size: var(--fs-lg);
+        color: var(--clr-grey);
+        margin-bottom: var(--spacing-md);
+    }
+
+    .discount-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+        background-color: var(--clr-primary);
+        color: #fff;
+        padding: var(--spacing-xs) var(--spacing-sm);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: var(--spacing-md);
+    }
+
+    .discount-badge h2 {
+        font-weight: 700;
+        color: #fff;
+        margin: 0;
+        font-size: 1.5rem;
+        animation: blink 1.5s infinite;
+    }
+
+    @keyframes blink {
+        0% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.5;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+    .discount-badge p {
+        color: #fff;
+        margin: 0;
+    }
+
+    .discount-badge strong {
+        color: #fff;
+    }
+
+    .hero-image {
+        text-align: center;
+    }
+
+    .hero-image img {
+        max-height: 400px;
+        animation: float 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes float {
+        from {
+            transform: translateY(0);
+        }
+
+        to {
+            transform: translateY(-15px);
+        }
+    }
+
+    /* Search Form */
+    .search-container {
+        background-color: #fff;
+        padding: var(--spacing-md);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-md);
+    }
+
+    .search-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: var(--spacing-sm);
+    }
+
+    .search-input {
+        position: relative;
+    }
+
+    .search-input i {
+        position: absolute;
+        left: var(--spacing-sm);
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--clr-primary);
+    }
+
+    .search-input input {
+        width: 100%;
+        padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) calc(var(--spacing-sm)*3);
+        border: 1px solid #ddd;
+        border-radius: var(--radius);
+        font-size: var(--fs-base);
+    }
+
+    .search-input input:focus {
+        outline: none;
+        border-color: var(--clr-primary);
+        box-shadow: 0 0 0 3px rgba(4, 61, 58, 0.2);
+    }
+
+    .search-btn {
+        align-self: stretch;
+        background-color: var(--clr-primary);
+        color: #fff;
+        border-radius: var(--radius);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+        justify-content: center;
+    }
+
+    /*------------------------------------
+  4. Features Section
+------------------------------------*/
+    .features-section {
+        padding-block: var(--spacing-xl);
+    }
+
+    .features-section .container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: var(--spacing-lg);
+    }
+
+    .feature-card {
+        background-color: #fff;
+        border-radius: var(--radius);
+        padding: var(--spacing-lg);
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100%;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .feature-icon {
+        width: 70px;
+        height: 70px;
+        background-color: var(--clr-secondary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: var(--spacing-md);
+    }
+
+    .feature-icon i {
+        font-size: 1.75rem;
+        color: var(--clr-primary);
+    }
+
+    .feature-card h3 {
+        font-size: var(--fs-lg);
+        margin-bottom: var(--spacing-md);
+        color: var(--clr-dark);
+        font-weight: 600;
+    }
+
+    .feature-card p {
+        font-size: var(--fs-base);
+        color: var(--clr-grey);
+        margin-top: auto;
+    }
+
+    /*------------------------------------
+  5. Section Headers
+------------------------------------*/
+    .section-header {
+        text-align: center;
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .section-header h2 {
+        font-size: var(--fs-xl);
+        color: var(--clr-dark);
+        position: relative;
+        display: inline-block;
+        margin-bottom: var(--spacing-xs);
+    }
+
+    .section-header h2::after {
+        content: '';
+        position: absolute;
+        width: 60px;
+        height: 3px;
+        background-color: var(--clr-primary);
+        bottom: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .section-header p {
+        font-size: var(--fs-base);
+        color: var(--clr-grey);
+    }
+
+    /*------------------------------------
+  6. Specialties & Steps
+------------------------------------*/
+    .specialties-grid,
+    .steps-container {
+        display: grid;
+        gap: var(--spacing-md);
+    }
+
+    .specialties-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-lg);
+    }
+
+    .specialties-section {
+        padding: var(--spacing-lg) 0;
+    }
+
+    .specialty-card,
+    .step-card {
+        background-color: #fff;
+        border-radius: var(--radius);
+        padding: var(--spacing-md);
+        box-shadow: var(--shadow-sm);
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .specialty-card:hover,
+    .step-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .specialty-icon,
+    .step-icon {
+        width: 60px;
+        height: 60px;
+        background-color: var(--clr-secondary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto var(--spacing-sm);
+    }
+
+    .specialty-icon img {
+        max-width: 70%;
+        max-height: 70%;
+        object-fit: contain;
+    }
+
+    .specialty-card h3,
+    .step-card h3 {
+        font-size: var(--fs-lg);
+        margin-bottom: var(--spacing-xs);
+        color: var(--clr-dark);
+    }
+
+    .specialty-card p,
+    .step-card p {
+        font-size: var(--fs-base);
+        color: var(--clr-grey);
+    }
+
+    .step-number {
+        background-color: var(--clr-primary);
+        color: #fff;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-inline: auto;
+        margin-block-end: var(--spacing-xs);
+    }
+
+    /*------------------------------------
+  7. About & Stats
+------------------------------------*/
+    .about-section {
+        padding: var(--spacing-xl) 0;
+        background-color: #fff;
+    }
+
+    .about-section .section-header {
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .about-section .section-header h2 {
+        font-size: var(--fs-xl);
+        margin-bottom: var(--spacing-xs);
+    }
+
+    .about-section .section-header p {
+        font-size: var(--fs-lg);
+        color: var(--clr-grey);
+    }
+
+    .about-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-xl);
+        margin-top: var(--spacing-lg);
+        align-items: center;
+    }
+
+    .about-image {
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        height: 100%;
+    }
+
+    .about-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .about-text {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    .about-text p {
+        margin: 0;
+        font-size: var(--fs-base);
+        line-height: 1.7;
+        color: var(--clr-grey);
+    }
+
+    .about-stats {
+        display: flex;
+        justify-content: space-between;
+        gap: var(--spacing-lg);
+        margin-top: var(--spacing-lg);
+        padding-top: var(--spacing-md);
+        border-top: 1px solid #eee;
+    }
+
+    .stat-item {
+        text-align: center;
+        flex: 1;
+    }
+
+    .stat-item h3 {
+        font-size: var(--fs-xl);
+        color: var(--clr-primary);
+        margin-bottom: var(--spacing-xs);
+        font-weight: 700;
+    }
+
+    .stat-item p {
+        font-size: var(--fs-base);
+        margin: 0;
+        color: var(--clr-dark);
+        font-weight: 500;
+    }
+
+    @media (max-width: 992px) {
+        .about-content {
+            grid-template-columns: 1fr;
+            gap: var(--spacing-lg);
+        }
+
+        .about-image {
+            max-height: 400px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .about-stats {
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .stat-item {
+            width: 100%;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .stat-item:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    /*------------------------------------
+  8. CTA Section
+------------------------------------*/
+    .cta-section {
+        background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-primary-dark) 100%);
+        padding-block: var(--spacing-lg);
+    }
+
+    .cta-section .container {
+        position: relative;
+    }
+
+    .cta-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--spacing-md);
+    }
+
+    .cta-content h3 {
+        color: #000;
+        font-size: var(--fs-xl);
+        margin: 0;
+        flex: 1;
+    }
+
+    .cta-button {
+        display: inline-block;
+        padding: var(--spacing-sm) var(--spacing-lg);
+        background-color: #0c6e69;
+        color: white;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: var(--radius);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: var(--shadow-sm);
+        white-space: nowrap;
+    }
+
+    .cta-button:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+    }
+
+    @media (max-width: 768px) {
+        .cta-content {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .cta-content h3 {
+            margin-bottom: var(--spacing-md);
+        }
+    }
+
+    /*------------------------------------
+  9. Responsive Breakpoints
+------------------------------------*/
+    @media (min-width: 600px) {
+        .hero-section {
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+        }
+
+        .about-content {
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+        }
+
+        .steps-container {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (min-width: 900px) {
+        :root {
+            --fs-xxl: 2.5rem;
+            --fs-xl: 2rem;
+            --fs-lg: 1.25rem;
+        }
+    }
+
+    /* Steps Section */
+    .steps-section {
+        background-color: #f9f9f9;
+        padding: var(--spacing-xl) 0;
+    }
+
+    .section-title {
+        font-size: var(--fs-xl);
+        color: var(--clr-dark);
+        margin-bottom: var(--spacing-xs);
+        position: relative;
+        display: inline-block;
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        width: 60px;
+        height: 3px;
+        background-color: var(--clr-primary);
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .section-subtitle {
+        font-size: var(--fs-lg);
+        color: var(--clr-grey);
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .steps-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-lg);
+        margin-top: var(--spacing-lg);
+    }
+
+    .step-card {
+        background-color: #fff;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-sm);
+        padding: var(--spacing-lg) var(--spacing-md);
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100%;
+    }
+
+    .step-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .step-number {
+        position: absolute;
+        top: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--clr-primary);
+        color: #fff;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+
+    .step-icon {
+        font-size: 40px;
+        color: var(--clr-primary);
+        margin-bottom: var(--spacing-md);
+        margin-top: var(--spacing-xs);
+    }
+
+    .step-card h3 {
+        margin-bottom: var(--spacing-md);
+        font-size: var(--fs-lg);
+        color: var(--clr-dark);
+        font-weight: 600;
+    }
+
+    .step-card p {
+        color: var(--clr-grey);
+        font-size: var(--fs-base);
+    }
+
+    @media (max-width: 992px) {
+        .steps-container {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .steps-container {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,274 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Edit Appointment - MedEase Admin{% endblock %}
+
+{% block admin_content %}
+<div class="admin-dashboard-wrapper">
+    <div class="admin-sidebar">
+        <div class="admin-profile">
+            <div class="admin-avatar">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <h3>Welcome, Admin</h3>
+            <p>{{ user.email }}</p>
+        </div>
+        <nav class="admin-nav">
+            <ul>
+                <li><a href="{% url 'admin_dashboard' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li class="active"><a href="{% url 'admin_manage_appointments' %}"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+                <li><a href="{% url 'admin_doctors_list' %}"><i class="fas fa-user-md"></i> Doctors</a></li>
+                <li><a href="{% url 'admin_specialities' %}"><i class="fas fa-stethoscope"></i> Specialities</a></li>
+                <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </nav>
+    </div>
+    
+    <div class="admin-content">
+        <header class="admin-header">
+            <h1><i class="fas fa-edit"></i> Edit Appointment</h1>
+            <div class="admin-header-right">
+                <a href="{% url 'admin_appointment_detail' appointment.id %}" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Appointment
+                </a>
+            </div>
+        </header>
+        
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                {{ message }}
+                <button class="close-message"><i class="fas fa-times"></i></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <div class="form-container">
+            <form method="POST" class="appointment-form">
+                {% csrf_token %}
+                
+                <div class="form-section">
+                    <h2><i class="fas fa-user"></i> Patient Information</h2>
+                    <div class="form-group">
+                        <label>Patient Name</label>
+                        <div class="readonly-field">{{ appointment.patient.first_name }} {{ appointment.patient.last_name }}</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <div class="readonly-field">{{ appointment.patient.email }}</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Mobile</label>
+                        <div class="readonly-field">{{ appointment.patient.mobile }}</div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h2><i class="fas fa-user-md"></i> Doctor Selection</h2>
+                    <div class="form-group">
+                        <label for="doctor">Select Doctor</label>
+                        <select id="doctor" name="doctor" required>
+                            {% for doctor in doctors %}
+                            <option value="{{ doctor.id }}" {% if doctor.id == appointment.doctor.id %}selected{% endif %}>
+                                Dr. {{ doctor.user.first_name }} {{ doctor.user.last_name }} - {{ doctor.speciality.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h2><i class="fas fa-calendar-alt"></i> Appointment Details</h2>
+                    <div class="form-group">
+                        <label for="appointment_date">Appointment Date</label>
+                        <input type="date" id="appointment_date" name="appointment_date" value="{{ appointment.appointment_date|date:'Y-m-d' }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="appointment_time">Appointment Time</label>
+                        <input type="time" id="appointment_time" name="appointment_time" value="{{ appointment.appointment_time|time:'H:i' }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="symptoms">Symptoms/Notes</label>
+                        <textarea id="symptoms" name="symptoms" rows="4">{{ appointment.symptoms }}</textarea>
+                    </div>
+                </div>
+                
+                <div class="form-buttons">
+                    <a href="{% url 'admin_appointment_detail' appointment.id %}" class="cancel-btn">Cancel</a>
+                    <button type="submit" class="save-btn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Close message buttons
+        const closeButtons = document.querySelectorAll('.close-message');
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                this.parentElement.style.display = 'none';
+            });
+        });
+    });
+</script>
+{% endblock %}
+
+{% block styles %}
+<style>
+    /* Back button */
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 10px 15px;
+        background-color: #f3f4f6;
+        color: #374151;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+    
+    .back-btn i {
+        margin-right: 8px;
+    }
+    
+    .back-btn:hover {
+        background-color: #e5e7eb;
+    }
+    
+    /* Form container */
+    .form-container {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        padding: 30px;
+    }
+    
+    /* Form sections */
+    .form-section {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .form-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    
+    .form-section h2 {
+        font-size: 18px;
+        margin: 0 0 20px;
+        color: #333;
+        display: flex;
+        align-items: center;
+    }
+    
+    .form-section h2 i {
+        margin-right: 10px;
+        color: #10847e;
+    }
+    
+    /* Form groups */
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #333;
+    }
+    
+    .readonly-field {
+        padding: 12px 15px;
+        background-color: #f9fafb;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        color: #666;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 15px;
+        transition: all 0.3s;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: #10847e;
+        box-shadow: 0 0 0 2px rgba(16, 132, 126, 0.2);
+        outline: none;
+    }
+    
+    /* Form buttons */
+    .form-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px;
+        margin-top: 30px;
+    }
+    
+    .cancel-btn {
+        padding: 12px 20px;
+        background-color: #f3f4f6;
+        color: #374151;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    .cancel-btn:hover {
+        background-color: #e5e7eb;
+    }
+    
+    .save-btn {
+        padding: 12px 24px;
+        background-color: #10847e;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .save-btn:hover {
+        background-color: #064e4a;
+    }
+    
+    /* Responsive styles */
+    @media (max-width: 768px) {
+        .form-container {
+            padding: 20px;
+        }
+        
+        .form-buttons {
+            flex-direction: column;
+        }
+        
+        .cancel-btn, .save-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %} 

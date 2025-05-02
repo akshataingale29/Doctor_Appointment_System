@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MedEase - Doctor Appointment System{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    {% block styles %}{% endblock %}
+    <style>
+        /* Common styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Navbar styles */
+        .navbar {
+            background-color: #ffffff;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            width: 100%;
+        }
+
+        .navdiv {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            height: 70px;
+        }
+
+        .nav-wrapper {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .logo a {
+            color: #10847e;
+            font-size: 28px;
+            font-weight: 700;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo a i {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+
+        .navbar ul {
+            display: flex;
+            align-items: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        .navbar li {
+            margin-left: 25px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .navbar li a {
+            color: #444;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .navbar li a i {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        .navbar li a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 3px;
+            background: #10847e;
+            left: 12px;
+            bottom: 15px;
+            transition: width 0.3s ease;
+        }
+
+        .navbar li a:hover {
+            color: #10847e;
+        }
+
+        .navbar li a:hover:after {
+            width: calc(100% - 24px);
+        }
+
+        .navbar li.active a {
+            color: #10847e;
+        }
+
+        .navbar li.active a:after {
+            width: calc(100% - 24px);
+        }
+
+        .call-btn {
+            background-color: #10847e;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            margin-left: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 132, 126, 0.3);
+        }
+
+        .call-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(16, 132, 126, 0.4);
+            background-color: #0c6e69;
+        }
+
+        .call-btn a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .call-btn a i {
+            margin-right: 8px;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #10847e;
+            cursor: pointer;
+        }
+
+        .user-welcome {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-welcome i {
+            margin-right: 8px;
+            color: #10847e;
+        }
+
+        /* Footer styles */
+        footer {
+            background-color: #172b4d;
+            color: white;
+            padding: 60px 0 30px;
+            margin-top: 80px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-logo h1 {
+            margin-top: 0;
+            font-size: 28px;
+            color: #ffffff;
+        }
+
+        .footer-logo p {
+            color: #a0aec0;
+            max-width: 250px;
+        }
+
+        .footer-links h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-links h3:after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 2px;
+            background: #10847e;
+            left: 0;
+            bottom: 0;
+        }
+
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #a0aec0;
+            text-decoration: none;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-links a i {
+            margin-right: 10px;
+            font-size: 14px;
+        }
+
+        .footer-links a:hover {
+            color: #ffffff;
+        }
+
+        .footer-social h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-social h3:after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 2px;
+            background: #10847e;
+            left: 0;
+            bottom: 0;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .social-icons a:hover {
+            background: #10847e;
+            transform: translateY(-5px);
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #a0aec0;
+            font-size: 14px;
+        }
+
+        /* Media queries */
+        @media (max-width: 992px) {
+            .footer-content {
+                flex-wrap: wrap;
+                gap: 30px;
+            }
+
+            .footer-logo,
+            .footer-links,
+            .footer-social {
+                flex-basis: 45%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+                transition: all 0.3s ease;
+            }
+
+            .mobile-menu-btn:active {
+                transform: scale(0.95);
+            }
+
+            .nav-wrapper {
+                position: absolute;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 20px;
+                box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+                display: none;
+                border-top: 1px solid #eee;
+                max-height: 80vh;
+                overflow-y: auto;
+                height: auto;
+                z-index: 1000;
+            }
+
+            .nav-wrapper.show {
+                display: flex;
+                animation: fadeIn 0.3s ease-in-out;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .navbar ul {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                width: 100%;
+                position: static;
+                box-shadow: none;
+                padding: 0;
+                border-top: none;
+                height: auto;
+            }
+
+            .navbar li {
+                margin: 8px 0;
+                width: 100%;
+                height: auto;
+            }
+
+            .navbar li a {
+                padding: 12px 15px;
+                width: 100%;
+                font-size: 16px;
+                height: auto;
+                border-radius: 6px;
+            }
+
+            .navbar li a:after {
+                display: none;
+            }
+
+            .navbar li a:hover {
+                background-color: #f5f5f5;
+                border-radius: 6px;
+            }
+
+            .navbar li.active a {
+                background-color: #e6f7f6;
+                border-radius: 6px;
+            }
+
+            .call-btn {
+                margin: 15px 0 0 0;
+                width: 100%;
+                display: block;
+                text-align: center;
+                border-radius: 6px;
+            }
+
+            .call-btn a {
+                justify-content: center;
+                padding: 10px;
+            }
+
+            .user-welcome a {
+                background-color: #f0f9f9;
+            }
+
+            .footer-logo,
+            .footer-links,
+            .footer-social {
+                flex-basis: 100%;
+            }
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            width: 95%;
+            max-width: 400px;
+            border-radius: 10px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.2);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            margin: 10px 15px 0 0;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .close-modal:hover {
+            color: #10847e;
+        }
+
+        .modal-header {
+            padding: 15px 25px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+
+        .modal-header i {
+            font-size: 24px;
+            color: #10847e;
+            margin-right: 15px;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+        }
+
+        .modal-body {
+            padding: 25px;
+            text-align: center;
+        }
+
+        .modal-body p {
+            margin-top: 0;
+            color: #666;
+        }
+
+        .phone-number {
+            font-size: 30px;
+            color: #10847e;
+            margin: 15px 0;
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            background-color: #10847e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            margin: 10px auto 0;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn i {
+            margin-right: 8px;
+        }
+
+        .copy-btn:hover {
+            background-color: #0c6e69;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="navdiv">
+            <div class="logo"><a href="/"><i class="fas fa-heartbeat"></i>MedEase</a></div>
+            <button class="mobile-menu-btn" id="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="nav-wrapper">
+                <ul id="nav-menu">
+                    <li class="{% if request.path == '/' %}active{% endif %}">
+                        <a href="/"><i class="fas fa-home"></i> Home</a>
+                    </li>
+                    <li class="{% if '/doctors/' in request.path %}active{% endif %}">
+                        <a href="/doctors/"><i class="fas fa-user-md"></i> Find Doctors</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    {% if user.is_doctor %}
+                    <li class="{% if '/appointments/' in request.path %}active{% endif %}">
+                        <a href="/appointments/"><i class="fas fa-calendar-alt"></i> My Appointments</a>
+                    </li>
+                    {% elif user.is_hospital_admin %}
+                    <li class="{% if '/admin/' in request.path %}active{% endif %}">
+                        <a href="{% url 'admin_dashboard' %}"><i class="fas fa-chart-line"></i> Admin Dashboard</a>
+                    </li>
+                    {% else %}
+                    <li class="{% if '/appointments/' in request.path %}active{% endif %}">
+                        <a href="/appointments/"><i class="fas fa-calendar-alt"></i> My Appointments</a>
+                    </li>
+                    {% endif %}
+                    <li class="user-welcome">
+                        <a href="#"><i class="fas fa-user-circle"></i> {{ user.first_name }}</a>
+                    </li>
+                    <li>
+                        <a href="/logout/"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </li>
+                    {% else %}
+                    <li class="{% if '/login/' in request.path %}active{% endif %}">
+                        <a href="/login/"><i class="fas fa-sign-in-alt"></i> Login</a>
+                    </li>
+                    <li class="{% if '/signup/' in request.path %}active{% endif %}">
+                        <a href="/signup/"><i class="fas fa-user-plus"></i> Signup</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <button class="call-btn" id="call-btn">
+                    <a href="javascript:void(0)"><i class="fas fa-phone-alt"></i> Call Now</a>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <h1><i class="fas fa-heartbeat"></i> MedEase</h1>
+                <p>Connecting patients with quality healthcare services. Your health is our priority.</p>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/"><i class="fas fa-chevron-right"></i> Home</a></li>
+                    <li><a href="/doctors/"><i class="fas fa-chevron-right"></i> Find Doctors</a></li>
+                    <li><a href="/appointments/"><i class="fas fa-chevron-right"></i> Appointments</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>Our Services</h3>
+                <ul>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Online Consultation</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Emergency Care</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Lab Tests</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Medicine Delivery</a></li>
+                </ul>
+            </div>
+            <div class="footer-social">
+                <h3>Connect With Us</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2023 MedEase. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Phone Modal -->
+    <div id="phone-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-header">
+                <i class="fas fa-phone-alt"></i>
+                <h3>Contact Us</h3>
+            </div>
+            <div class="modal-body">
+                <p>Call us at:</p>
+                <h2 class="phone-number">8888888888</h2>
+                <button id="copy-phone" class="copy-btn">
+                    <i class="fas fa-copy"></i> Copy Number
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {% block scripts %}{% endblock %}
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-toggle').addEventListener('click', function () {
+            document.querySelector('.nav-wrapper').classList.toggle('show');
+            this.querySelector('i').classList.toggle('fa-bars');
+            this.querySelector('i').classList.toggle('fa-times');
+        });
+
+        // Call button functionality
+        document.getElementById('call-btn').addEventListener('click', function () {
+            // Display modal instead of alert
+            document.getElementById('phone-modal').style.display = 'flex';
+        });
+
+        // Close modal
+        document.querySelector('.close-modal').addEventListener('click', function () {
+            document.getElementById('phone-modal').style.display = 'none';
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function (event) {
+            let modal = document.getElementById('phone-modal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Copy phone number
+        document.getElementById('copy-phone').addEventListener('click', function () {
+            let phoneNumber = document.querySelector('.phone-number').innerText;
+            navigator.clipboard.writeText(phoneNumber);
+            this.innerText = 'Copied!';
+            setTimeout(() => {
+                this.innerHTML = '<i class="fas fa-copy"></i> Copy Number';
+            }, 2000);
+        });
+    </script>
+</body>
+
+</html>

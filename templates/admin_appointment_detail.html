@@ -1,0 +1,698 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Appointment Details - MedEase Admin{% endblock %}
+
+{% block admin_content %}
+<div class="admin-dashboard-wrapper">
+    <div class="admin-sidebar">
+        <div class="admin-profile">
+            <div class="admin-avatar">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <h3>Welcome, Admin</h3>
+            <p>{{ user.email }}</p>
+        </div>
+        <nav class="admin-nav">
+            <ul>
+                <li><a href="{% url 'admin_dashboard' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li class="active"><a href="{% url 'admin_manage_appointments' %}"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+                <li><a href="{% url 'admin_doctors_list' %}"><i class="fas fa-user-md"></i> Doctors</a></li>
+                <li><a href="{% url 'admin_specialities' %}"><i class="fas fa-stethoscope"></i> Specialities</a></li>
+                <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </nav>
+    </div>
+    
+    <div class="admin-content">
+        <header class="admin-header">
+            <h1><i class="fas fa-calendar-check"></i> Appointment Details</h1>
+            <div class="admin-header-right">
+                <a href="{% url 'admin_manage_appointments' %}" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Appointments
+                </a>
+            </div>
+        </header>
+        
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                {{ message }}
+                <button class="close-message"><i class="fas fa-times"></i></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <div class="appointment-detail-container">
+            <div class="status-bar">
+                <div class="appointment-id">
+                    <span class="label">Appointment ID:</span>
+                    <span class="value">#{{ appointment.id }}</span>
+                </div>
+                <div class="appointment-status">
+                    <span class="status-badge status-{{ appointment.status|lower }}">
+                        {{ appointment.status }}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="detail-panels">
+                <div class="detail-panel">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-calendar-alt"></i> Appointment Information</h2>
+                    </div>
+                    <div class="panel-body">
+                        <div class="detail-row">
+                            <div class="detail-label">Date:</div>
+                            <div class="detail-value">{{ appointment.appointment_date }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Time:</div>
+                            <div class="detail-value">{{ appointment.appointment_time }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Created:</div>
+                            <div class="detail-value">{{ appointment.created_at }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Updated:</div>
+                            <div class="detail-value">{{ appointment.updated_at }}</div>
+                        </div>
+                        {% if appointment.symptoms %}
+                        <div class="detail-row">
+                            <div class="detail-label">Symptoms:</div>
+                            <div class="detail-value">{{ appointment.symptoms }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="detail-panel">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-user"></i> Patient Information</h2>
+                    </div>
+                    <div class="panel-body">
+                        <div class="user-info">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="user-details">
+                                <h3>{{ appointment.patient.first_name }} {{ appointment.patient.last_name }}</h3>
+                                <div class="contact-info">
+                                    <p><i class="fas fa-envelope"></i> {{ appointment.patient.email }}</p>
+                                    <p><i class="fas fa-phone"></i> {{ appointment.patient.mobile }}</p>
+                                    <p><i class="fas fa-map-marker-alt"></i> {{ appointment.patient.city }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detail-panel">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-user-md"></i> Doctor Information</h2>
+                    </div>
+                    <div class="panel-body">
+                        <div class="user-info">
+                            <div class="user-avatar">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                            <div class="user-details">
+                                <h3>Dr. {{ appointment.doctor.user.first_name }} {{ appointment.doctor.user.last_name }}</h3>
+                                <span class="doctor-specialty">{{ appointment.doctor.speciality.name }}</span>
+                                <div class="contact-info">
+                                    <p><i class="fas fa-envelope"></i> {{ appointment.doctor.user.email }}</p>
+                                    <p><i class="fas fa-map-marker-alt"></i> {{ appointment.doctor.location.name }}</p>
+                                    <p><i class="fas fa-rupee-sign"></i> {{ appointment.doctor.fee }} per Consultation</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="action-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-cog"></i> Manage Appointment</h2>
+                </div>
+                <div class="panel-body">
+                    <div class="action-buttons">
+                        <a href="{% url 'admin_edit_appointment' appointment.id %}" class="edit-btn">
+                            <i class="fas fa-edit"></i> Edit Appointment
+                        </a>
+                        
+                        {% if appointment.status == 'pending' %}
+                        <form method="POST" action="{% url 'admin_update_appointment_status' appointment.id %}" class="action-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="status" value="confirmed">
+                            <button type="submit" class="confirm-btn">
+                                <i class="fas fa-check-circle"></i> Confirm Appointment
+                            </button>
+                        </form>
+                        {% endif %}
+                        
+                        {% if appointment.status == 'confirmed' %}
+                        <form method="POST" action="{% url 'admin_update_appointment_status' appointment.id %}" class="action-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="status" value="completed">
+                            <button type="submit" class="complete-btn">
+                                <i class="fas fa-check-double"></i> Mark as Completed
+                            </button>
+                        </form>
+                        {% endif %}
+                        
+                        {% if appointment.status == 'pending' or appointment.status == 'confirmed' %}
+                        <button class="cancel-btn" id="cancel-appointment-btn">
+                            <i class="fas fa-times-circle"></i> Cancel Appointment
+                        </button>
+                        {% endif %}
+                        
+                        {% if appointment.status == 'cancelled' or appointment.status == 'completed' %}
+                        <form method="POST" action="{% url 'admin_update_appointment_status' appointment.id %}" class="action-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="status" value="pending">
+                            <button type="submit" class="reopen-btn">
+                                <i class="fas fa-redo"></i> Reopen Appointment
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Appointment Modal -->
+<div id="cancel-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Confirm Cancellation</h2>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to cancel this appointment?</p>
+            <div class="appointment-details">
+                <div class="detail-row">
+                    <span class="detail-label">Patient:</span>
+                    <span class="detail-value">{{ appointment.patient.first_name }} {{ appointment.patient.last_name }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Doctor:</span>
+                    <span class="detail-value">Dr. {{ appointment.doctor.user.first_name }} {{ appointment.doctor.user.last_name }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Date & Time:</span>
+                    <span class="detail-value">{{ appointment.appointment_date }} at {{ appointment.appointment_time }}</span>
+                </div>
+            </div>
+            <p class="warning"><i class="fas fa-exclamation-triangle"></i> This will notify the patient and doctor about the cancellation.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-cancel-btn" id="cancel-action">Cancel</button>
+            <form method="POST" action="{% url 'admin_update_appointment_status' appointment.id %}" class="action-form">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="cancelled">
+                <button type="submit" class="confirm-cancel-btn">Confirm Cancellation</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Cancel appointment modal
+        const modal = document.getElementById('cancel-modal');
+        const cancelBtn = document.getElementById('cancel-appointment-btn');
+        const closeModal = document.querySelector('.close');
+        const cancelAction = document.getElementById('cancel-action');
+        
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', function() {
+                modal.style.display = 'block';
+            });
+        }
+        
+        if (closeModal) {
+            closeModal.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+        }
+        
+        if (cancelAction) {
+            cancelAction.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+        }
+        
+        // Close when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
+        // Close message buttons
+        const closeButtons = document.querySelectorAll('.close-message');
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                this.parentElement.style.display = 'none';
+            });
+        });
+    });
+</script>
+{% endblock %}
+
+{% block styles %}
+<style>
+    /* Back button */
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 10px 15px;
+        background-color: #f3f4f6;
+        color: #374151;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+    
+    .back-btn i {
+        margin-right: 8px;
+    }
+    
+    .back-btn:hover {
+        background-color: #e5e7eb;
+    }
+    
+    /* Appointment detail container */
+    .appointment-detail-container {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+    
+    /* Status bar */
+    .status-bar {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px;
+        border-bottom: 1px solid #f0f0f0;
+        background-color: #f9fafb;
+        align-items: center;
+    }
+    
+    .appointment-id {
+        display: flex;
+        align-items: center;
+    }
+    
+    .appointment-id .label {
+        font-weight: 500;
+        color: #555;
+        margin-right: 8px;
+    }
+    
+    .appointment-id .value {
+        font-weight: 600;
+        color: #333;
+        font-size: 16px;
+    }
+    
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        display: inline-block;
+    }
+    
+    .status-confirmed {
+        background-color: #e6f7f6;
+        color: #10847e;
+    }
+    
+    .status-pending {
+        background-color: #fff7e6;
+        color: #d97706;
+    }
+    
+    .status-cancelled {
+        background-color: #fee2e2;
+        color: #dc2626;
+    }
+    
+    .status-completed {
+        background-color: #f0fff4;
+        color: #22863a;
+    }
+    
+    /* Detail panels */
+    .detail-panels {
+        padding: 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 20px;
+    }
+    
+    .detail-panel {
+        border: 1px solid #eee;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .panel-header {
+        padding: 15px;
+        background-color: #f9fafb;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .panel-header h2 {
+        margin: 0;
+        font-size: 18px;
+        color: #333;
+        display: flex;
+        align-items: center;
+    }
+    
+    .panel-header h2 i {
+        margin-right: 10px;
+        color: #10847e;
+    }
+    
+    .panel-body {
+        padding: 15px;
+    }
+    
+    /* Detail rows */
+    .detail-row {
+        display: flex;
+        margin-bottom: 12px;
+        font-size: 14px;
+    }
+    
+    .detail-row:last-child {
+        margin-bottom: 0;
+    }
+    
+    .detail-label {
+        width: 100px;
+        font-weight: 500;
+        color: #555;
+    }
+    
+    .detail-value {
+        flex: 1;
+        color: #333;
+    }
+    
+    /* User info */
+    .user-info {
+        display: flex;
+        align-items: flex-start;
+    }
+    
+    .user-avatar {
+        width: 60px;
+        height: 60px;
+        background-color: #e6f7f6;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+    
+    .user-avatar i {
+        font-size: 24px;
+        color: #10847e;
+    }
+    
+    .user-details {
+        flex: 1;
+    }
+    
+    .user-details h3 {
+        margin: 0 0 5px;
+        font-size: 18px;
+        color: #333;
+    }
+    
+    .doctor-specialty {
+        display: inline-block;
+        padding: 4px 10px;
+        background-color: #e6f7f6;
+        color: #10847e;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+    
+    .contact-info {
+        font-size: 14px;
+        color: #555;
+    }
+    
+    .contact-info p {
+        display: flex;
+        align-items: center;
+        margin: 8px 0;
+    }
+    
+    .contact-info i {
+        width: 20px;
+        margin-right: 10px;
+        color: #10847e;
+    }
+    
+    /* Action panel */
+    .action-panel {
+        border-top: 1px solid #eee;
+        margin-top: 5px;
+    }
+    
+    .action-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .action-form {
+        display: inline;
+    }
+    
+    .edit-btn, .confirm-btn, .complete-btn, .cancel-btn, .reopen-btn {
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: none;
+    }
+    
+    .edit-btn {
+        background-color: #e6f7f6;
+        color: #10847e;
+        text-decoration: none;
+    }
+    
+    .edit-btn:hover {
+        background-color: #d1efed;
+    }
+    
+    .confirm-btn {
+        background-color: #e6f0ff;
+        color: #1a56db;
+    }
+    
+    .confirm-btn:hover {
+        background-color: #d1e2ff;
+    }
+    
+    .complete-btn {
+        background-color: #f0fff4;
+        color: #22863a;
+    }
+    
+    .complete-btn:hover {
+        background-color: #dcf5e7;
+    }
+    
+    .cancel-btn {
+        background-color: #fee2e2;
+        color: #dc2626;
+    }
+    
+    .cancel-btn:hover {
+        background-color: #fecaca;
+    }
+    
+    .reopen-btn {
+        background-color: #fff7e6;
+        color: #d97706;
+    }
+    
+    .reopen-btn:hover {
+        background-color: #fef0c7;
+    }
+    
+    .edit-btn i, .confirm-btn i, .complete-btn i, .cancel-btn i, .reopen-btn i {
+        margin-right: 8px;
+    }
+    
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    .modal-content {
+        background-color: white;
+        margin: 10% auto;
+        width: 95%;
+        max-width: 500px;
+        border-radius: 10px;
+        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.2);
+        animation: slideDown 0.3s;
+    }
+    
+    @keyframes slideDown {
+        from { transform: translateY(-50px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .modal-header {
+        padding: 20px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .modal-header h2 {
+        margin: 0;
+        font-size: 20px;
+        color: #333;
+    }
+    
+    .close {
+        font-size: 24px;
+        color: #aaa;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+    
+    .close:hover {
+        color: #333;
+    }
+    
+    .modal-body {
+        padding: 20px;
+    }
+    
+    .modal-body p {
+        margin: 0 0 20px;
+        font-size: 16px;
+    }
+    
+    .appointment-details {
+        background-color: #f9fafb;
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .warning {
+        color: #dc2626;
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        background-color: #fee2e2;
+        padding: 10px 15px;
+        border-radius: 6px;
+    }
+    
+    .warning i {
+        margin-right: 8px;
+    }
+    
+    .modal-footer {
+        padding: 15px 20px;
+        background-color: #f9fafb;
+        border-top: 1px solid #eee;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+    
+    .modal-cancel-btn {
+        padding: 10px 20px;
+        background-color: #f3f4f6;
+        color: #374151;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .modal-cancel-btn:hover {
+        background-color: #e5e7eb;
+    }
+    
+    .confirm-cancel-btn {
+        padding: 10px 20px;
+        background-color: #dc2626;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .confirm-cancel-btn:hover {
+        background-color: #b91c1c;
+    }
+    
+    /* Responsive styles */
+    @media (max-width: 768px) {
+        .detail-panels {
+            grid-template-columns: 1fr;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .edit-btn, .confirm-btn, .complete-btn, .cancel-btn, .reopen-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %} 

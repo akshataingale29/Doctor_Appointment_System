@@ -1,0 +1,544 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Admin Dashboard - MedEase{% endblock %}
+
+{% block admin_content %}
+<div class="admin-dashboard-wrapper">
+    <div class="admin-sidebar">
+        <div class="admin-profile">
+            <div class="admin-avatar">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <h3>Welcome, Admin</h3>
+            <p>{{ user.email }}</p>
+        </div>
+        <nav class="admin-nav">
+            <ul>
+                <li class="active"><a href="{% url 'admin_dashboard' %}"><i class="fas fa-tachometer-alt"></i>
+                        Dashboard</a></li>
+                <li><a href="{% url 'admin_manage_appointments' %}"><i class="fas fa-calendar-check"></i>
+                        Appointments</a></li>
+                <li><a href="{% url 'admin_doctors_list' %}"><i class="fas fa-user-md"></i> Doctors</a></li>
+                <li><a href="{% url 'admin_specialities' %}"><i class="fas fa-stethoscope"></i> Specialities</a></li>
+                <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="admin-content">
+        <header class="admin-header">
+            <h1><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
+            <div class="admin-header-right">
+                <span class="date-display">{{ today|date:"l, F j, Y" }}</span>
+            </div>
+        </header>
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                {{ message }}
+                <button class="close-message"><i class="fas fa-times"></i></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ total_appointments }}</h3>
+                    <p>Total Appointments</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ total_doctors }}</h3>
+                    <p>Total Doctors</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ total_patients }}</h3>
+                    <p>Total Patients</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-stethoscope"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ total_specialities }}</h3>
+                    <p>Specialities</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-sections">
+            <div class="section">
+                <div class="section-header">
+                    <h2><i class="fas fa-calendar-day"></i> Today's Appointments</h2>
+                    <a href="{% url 'admin_manage_appointments' %}" class="view-all">View All <i
+                            class="fas fa-arrow-right"></i></a>
+                </div>
+                {% if today_appointments %}
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appointment in today_appointments %}
+                            <tr>
+                                <td>{{ appointment.patient.first_name }} {{ appointment.patient.last_name }}</td>
+                                <td>Dr. {{ appointment.doctor.user.first_name }} {{ appointment.doctor.user.last_name }}
+                                </td>
+                                <td>{{ appointment.appointment_time }}</td>
+                                <td>
+                                    <span class="status-badge status-{{ appointment.status|lower }}">
+                                        {{ appointment.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{% url 'admin_appointment_detail' appointment.id %}"
+                                        class="action-btn view">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-calendar-day"></i>
+                    <p>No appointments scheduled for today</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h2><i class="fas fa-user-md"></i> Recent Doctors</h2>
+                    <a href="{% url 'admin_doctors_list' %}" class="view-all">View All <i
+                            class="fas fa-arrow-right"></i></a>
+                </div>
+                {% if recent_doctors %}
+                <div class="recent-doctors">
+                    {% for doctor in recent_doctors %}
+                    <div class="doctor-card-compact">
+                        <div class="doctor-avatar">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <div class="doctor-info">
+                            <h3>Dr. {{ doctor.user.first_name }} {{ doctor.user.last_name }}</h3>
+                            <span class="doctor-specialty">{{ doctor.speciality.name }}</span>
+                            <div class="doctor-meta">
+                                <span><i class="fas fa-map-marker-alt"></i> {{ doctor.location.name }}</span>
+                                <span><i class="fas fa-rupee-sign"></i> {{ doctor.fee }}</span>
+                            </div>
+                        </div>
+                        <a href="{% url 'admin_edit_doctor' doctor.id %}" class="edit-icon">
+                            <i class="fas fa-pen"></i>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-user-md"></i>
+                    <p>No doctors available</p>
+                    <a href="{% url 'admin_add_doctor' %}" class="add-btn">
+                        <i class="fas fa-plus"></i> Add Doctor
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Close message buttons
+        const closeButtons = document.querySelectorAll('.close-message');
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                this.parentElement.style.display = 'none';
+            });
+        });
+    });
+</script>
+{% endblock %}
+
+{% block styles %}
+<style>
+    /* Stats container */
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        padding: 25px;
+        display: flex;
+        align-items: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        background-color: #e6f7f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 20px;
+    }
+
+    .stat-icon i {
+        font-size: 24px;
+        color: #10847e;
+    }
+
+    .stat-info h3 {
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0 0 5px;
+        color: #333;
+    }
+
+    .stat-info p {
+        margin: 0;
+        color: #666;
+        font-size: 14px;
+    }
+
+    /* Dashboard sections */
+    .dashboard-sections {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: 30px;
+    }
+
+    .section {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .section-header {
+        padding: 20px;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .section-header h2 {
+        margin: 0;
+        font-size: 18px;
+        color: #333;
+        display: flex;
+        align-items: center;
+    }
+
+    .section-header h2 i {
+        margin-right: 10px;
+        color: #10847e;
+    }
+
+    .view-all {
+        color: #10847e;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        transition: color 0.3s;
+    }
+
+    .view-all i {
+        margin-left: 5px;
+        font-size: 12px;
+    }
+
+    .view-all:hover {
+        color: #064e4a;
+    }
+
+    /* Table styles */
+    .table-responsive {
+        overflow-x: auto;
+        padding: 0 20px 20px;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .data-table th {
+        font-weight: 600;
+        color: #333;
+        background-color: #f9fafb;
+    }
+
+    .data-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .data-table tr:hover td {
+        background-color: #f9fafb;
+    }
+
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        display: inline-block;
+    }
+
+    .status-confirmed {
+        background-color: #e6f7f6;
+        color: #10847e;
+    }
+
+    .status-pending {
+        background-color: #fff7e6;
+        color: #d97706;
+    }
+
+    .status-cancelled {
+        background-color: #fee2e2;
+        color: #dc2626;
+    }
+
+    .status-completed {
+        background-color: #f0fff4;
+        color: #22863a;
+    }
+
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+    }
+
+    .action-btn.view {
+        background-color: #e6f0ff;
+        color: #1a56db;
+    }
+
+    .action-btn.view:hover {
+        background-color: #d1e2ff;
+    }
+
+    /* Recent doctors */
+    .recent-doctors {
+        padding: 0 20px 20px;
+    }
+
+    .doctor-card-compact {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        border-bottom: 1px solid #f0f0f0;
+        position: relative;
+    }
+
+    .doctor-card-compact:last-child {
+        border-bottom: none;
+    }
+
+    .doctor-card-compact .doctor-avatar {
+        width: 50px;
+        height: 50px;
+        background-color: #e6f7f6;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+    }
+
+    .doctor-card-compact .doctor-avatar i {
+        font-size: 20px;
+        color: #10847e;
+    }
+
+    .doctor-card-compact .doctor-info {
+        flex: 1;
+    }
+
+    .doctor-card-compact h3 {
+        font-size: 16px;
+        margin: 0 0 5px;
+        color: #333;
+    }
+
+    .doctor-card-compact .doctor-specialty {
+        display: inline-block;
+        padding: 3px 8px;
+        background-color: #e6f7f6;
+        color: #10847e;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        margin-bottom: 5px;
+    }
+
+    .doctor-meta {
+        display: flex;
+        gap: 15px;
+        font-size: 13px;
+        color: #666;
+    }
+
+    .doctor-meta span {
+        display: flex;
+        align-items: center;
+    }
+
+    .doctor-meta i {
+        margin-right: 5px;
+        color: #10847e;
+    }
+
+    .edit-icon {
+        width: 32px;
+        height: 32px;
+        background-color: #e6f7f6;
+        color: #10847e;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+    }
+
+    .edit-icon:hover {
+        background-color: #d1efed;
+    }
+
+    /* Empty state */
+    .empty-state {
+        padding: 40px 20px;
+        text-align: center;
+    }
+
+    .empty-state i {
+        font-size: 40px;
+        color: #ccc;
+        margin-bottom: 15px;
+    }
+
+    .empty-state p {
+        color: #666;
+        margin-bottom: 20px;
+    }
+
+    .empty-state .add-btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 16px;
+        background-color: #10847e;
+        color: white;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background-color 0.3s;
+    }
+
+    .empty-state .add-btn i {
+        margin-right: 5px;
+        font-size: 12px;
+        color: white;
+        margin-bottom: 0;
+    }
+
+    .empty-state .add-btn:hover {
+        background-color: #064e4a;
+    }
+
+    /* Date display */
+    .date-display {
+        font-size: 14px;
+        color: #666;
+        background-color: #f9fafb;
+        padding: 8px 16px;
+        border-radius: 6px;
+        display: inline-block;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 1200px) {
+        .dashboard-sections {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .stats-container {
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        }
+
+        .admin-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .admin-header-right {
+            margin-top: 15px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .stats-container {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}

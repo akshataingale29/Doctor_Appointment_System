@@ -1,0 +1,187 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Add New Doctor - MedEase Admin{% endblock %}
+
+{% block admin_content %}
+<div class="admin-dashboard-wrapper">
+    <div class="admin-sidebar">
+        <div class="admin-profile">
+            <div class="admin-avatar">
+                <i class="fas fa-user-md"></i>
+            </div>
+            <h3>Welcome, Admin</h3>
+            <p>{{ user.email }}</p>
+        </div>
+        <nav class="admin-nav">
+            <ul>
+                <li><a href="{% url 'admin_dashboard' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="{% url 'admin_manage_appointments' %}"><i class="fas fa-calendar-check"></i>
+                        Appointments</a></li>
+                <li class="active"><a href="{% url 'admin_doctors_list' %}"><i class="fas fa-user-md"></i> Doctors</a>
+                </li>
+                <li><a href="{% url 'admin_specialities' %}"><i class="fas fa-stethoscope"></i> Specialities</a></li>
+                <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="admin-content">
+        <header class="admin-header">
+            <h1><i class="fas fa-user-md"></i> Add New Doctor</h1>
+            <div class="admin-header-right">
+                <a href="{% url 'admin_doctors_list' %}" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Doctors</span>
+                </a>
+            </div>
+        </header>
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                {{ message }}
+                <button class="close-message"><i class="fas fa-times"></i></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="form-container">
+            <form method="POST" action="{% url 'admin_add_doctor' %}" class="doctor-form">
+                {% csrf_token %}
+
+                <div class="form-section">
+                    <h2>Account Information</h2>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="profile_image">Profile Image</label>
+                            <input type="file" id="profile_image" name="profile_image" accept="image/*" required>
+                            <small class="form-text text-muted">Upload a professional photo (recommended size: 400x400
+                                pixels)</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="first_name">First Name</label>
+                            <input type="text" id="first_name" name="first_name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="last_name">Last Name</label>
+                            <input type="text" id="last_name" name="last_name" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="mobile">Mobile Number</label>
+                            <input type="text" id="mobile" name="mobile" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="city">City</label>
+                            <input type="text" id="city" name="city" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2>Professional Information</h2>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="specialty">Specialty</label>
+                            <select id="specialty" name="specialty" required>
+                                <option value="">Select a specialty</option>
+                                {% for specialty in specialties %}
+                                <option value="{{ specialty.id }}">{{ specialty.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="experience">Experience (Years)</label>
+                            <input type="number" id="experience" name="experience" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fee">Consultation Fee (₹)</label>
+                            <input type="number" id="fee" name="fee" min="0" step="0.01" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="location">Location</label>
+                            <select id="location" name="location" required>
+                                <option value="">Select a location</option>
+                                {% for location in locations %}
+                                <option value="{{ location.id }}">{{ location.name }}, {{ location.city }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2>Availability</h2>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="available_days">Available Days</label>
+                            <input type="text" id="available_days" name="available_days"
+                                placeholder="e.g. Monday,Wednesday,Friday" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="available_time_start">Available Time Start</label>
+                            <input type="time" id="available_time_start" name="available_time_start" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="available_time_end">Available Time End</label>
+                            <input type="time" id="available_time_end" name="available_time_end" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="{% url 'admin_doctors_list' %}" class="cancel-btn">Cancel</a>
+                    <button type="submit" class="submit-btn">Add Doctor</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Close message buttons
+        const closeButtons = document.querySelectorAll('.close-message');
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                this.parentElement.style.display = 'none';
+            });
+        });
+    });
+</script>
+{% endblock %}
