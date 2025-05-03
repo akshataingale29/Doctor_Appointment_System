@@ -1,11 +1,14 @@
 import os
 import django
 import glob
+from django.contrib.auth import get_user_model
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite.settings")
 django.setup()
 
 from members.models import Doctor
+
+User = get_user_model()
 
 def get_available_doctor_images():
     """Get a list of all available doctor profile images"""
@@ -64,6 +67,30 @@ def main():
         print(f"Dr. {doctor.user.first_name} {doctor.user.last_name}")
         print(f"Profile Image: {doctor.profile_image}")
         print()
+
+# Define the doctor to image mappings (by doctor ID and name)
+doctor_images = {
+    1: '/static/images/ProfilePhotos/DrRajeshSharma.jpeg',  # Dr. Rajesh Sharma
+    7: '/static/images/ProfilePhotos/DrAmitRGupta.png',     # Dr. Amit R Gupta
+    10: '/static/images/ProfilePhotos/DrAatishShah.jpeg'    # Dr. Aatish Shah
+}
+
+# Update the image paths in the database
+updated_count = 0
+for doctor_id, image_path in doctor_images.items():
+    try:
+        doctor = Doctor.objects.get(id=doctor_id)
+        old_path = doctor.profile_image
+        doctor.profile_image = image_path
+        doctor.save()
+        print(f"Updated Dr. {doctor.user.first_name} {doctor.user.last_name}")
+        print(f"  Old path: {old_path}")
+        print(f"  New path: {image_path}")
+        updated_count += 1
+    except Doctor.DoesNotExist:
+        print(f"Doctor with ID {doctor_id} not found in database")
+
+print(f"\nTotal doctors updated: {updated_count}")
 
 if __name__ == "__main__":
     main() 
