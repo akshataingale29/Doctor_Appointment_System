@@ -286,11 +286,11 @@ def admin_add_doctor(request):
             
             # Handle profile image upload
             profile_image = request.FILES.get('profile_image')
-            image_path = "/static/images/doctor-avatar.png"  # Default image path
+            image_path = "/static/images/profilePhotos/doctor-avatar.png"  # Default image path
             
             if profile_image:
                 # Create the profile photos directory if it doesn't exist
-                profile_dir = os.path.join(settings.STATIC_ROOT, 'images', 'profilephotos')
+                profile_dir = os.path.join(settings.STATIC_ROOT, 'images', 'profilePhotos')
                 os.makedirs(profile_dir, exist_ok=True)
                 
                 # Generate a unique filename
@@ -303,7 +303,7 @@ def admin_add_doctor(request):
                         destination.write(chunk)
                 
                 # Update the image path
-                image_path = f"/static/images/profilephotos/{filename}"
+                image_path = f"/static/images/profilePhotos/{filename}"
             
             # Create user
             doctor_user = User.objects.create(

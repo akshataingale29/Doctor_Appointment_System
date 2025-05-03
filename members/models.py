@@ -54,7 +54,7 @@ class Doctor(models.Model):
     available_days = models.CharField(max_length=100, default="Monday-Friday")  # e.g. "Monday,Wednesday,Friday"
     available_time_start = models.TimeField(default="09:00")
     available_time_end = models.TimeField(default="17:00")
-    profile_image = models.CharField(max_length=200, default="/static/images/doctor-avatar.png")  # Path to profile image
+    profile_image = models.CharField(max_length=200, default="/static/images/profilePhotos/doctor-avatar.png")  # Path to profile image
     
     def __str__(self):
         return f"Dr. {self.user.first_name} {self.user.last_name}"

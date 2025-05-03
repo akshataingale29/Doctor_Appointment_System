@@ -7,7 +7,7 @@
     <div class="doctor-profile">
         <div class="doctor-header">
             <div class="doctor-img">
-                <img src="/static/images/doctor-avatar.png" alt="Doctor">
+                <img src="{{ doctor.profile_image }}" alt="Dr. {{ doctor.user.first_name }} {{ doctor.user.last_name }}">
             </div>
             <div class="doctor-basic-info">
                 <h1>Dr. {{ doctor.user.first_name }} {{ doctor.user.last_name }}</h1>
