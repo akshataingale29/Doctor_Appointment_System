@@ -92,7 +92,11 @@
                         <div class="appointment-doctor-info">
                             <div class="info-header">
                                 <div class="avatar doctor-avatar">
+                                    {% if appointment.doctor.profile_image %}
+                                    <img src="{{ appointment.doctor.profile_image }}" alt="Dr. {{ appointment.doctor.user.first_name }} {{ appointment.doctor.user.last_name }}">
+                                    {% else %}
                                     <i class="fas fa-user-md"></i>
+                                    {% endif %}
                                 </div>
                                 <div class="info-title">
                                     <h3>Doctor</h3>
